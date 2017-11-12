@@ -73,3 +73,21 @@ func (b board) Draw() error {
 	return nil
 }
 
+/*
+	Determines if the player whose turn it is in check
+*/
+func (b board) isInCheck() bool {
+	var king uint64
+
+	if b.Turn == "w" {
+		king = b.blackKings
+	} else {
+		king = b.whiteKings
+	}
+
+	if b.Attacks(b.Turn) & king > 0 {
+		return true
+	} else {
+		return false
+	}
+}

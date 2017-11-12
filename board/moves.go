@@ -10,7 +10,7 @@ type move struct {
 }
 
 func (b board) HumanFriendlyMoves() []string {
-	allMoves := b.Moves()
+	allMoves := b.LegalMoves()
 
 	strMoves := make([]string, 0)
 
@@ -24,8 +24,8 @@ func (b board) HumanFriendlyMoves() []string {
 /*
 	Returns a list of all legal moves for the boards position
 */
-func (b board) Moves() []move {
-	allMoves := CandidateMoves(b)
+func (b board) LegalMoves() []move {
+	allMoves := b.PseudoMoves()
 	legalMoves := make([]move, 0)
 
 	for _, m := range allMoves {
@@ -39,11 +39,8 @@ func (b board) Moves() []move {
 			kings = nb.whiteKings
 		}
 
-		for _, nm := range attacks(nb, nb.Turn) {
-			if nm.to & kings > 0 {
-				isLegal = false
-				break
-			}
+		if nb.Attacks(nb.Turn) & kings > 0 {
+			isLegal = false
 		}
 
 		if isLegal {
@@ -57,28 +54,35 @@ func (b board) Moves() []move {
 /*
 	Returns a list of moves without validating that a player is moving into check.
 */
-func CandidateMoves(b board) []move {
-	allMoves := attacks(b, b.Turn)
+func (b board) PseudoMoves() []move {
+	allMoves := make([]move, 0)
+	allMoves = append(allMoves, pawnMoves(b, b.Turn)...)
+	allMoves = append(allMoves, rookMoves(b, b.Turn)...)
+	allMoves = append(allMoves, bishopMoves(b, b.Turn)...)
+	allMoves = append(allMoves, queenMoves(b, b.Turn)...)
+	allMoves = append(allMoves, knightMoves(b, b.Turn)...)
+	allMoves = append(allMoves, kingMoves(b, b.Turn)...)
+
 	allMoves = append(allMoves, castle(b, b.Turn)...)
 
 	return allMoves
 }
 
 /*
-	Returns a list of attacks a player can make, this is not a complete move set
+	Returns a list of Attacks a player can make, this is not a complete move set
 	as it does not include special moves or prevent moving into check.
 */
-func attacks (b board, color string) []move {
-	allMoves := make([]move, 0)
+func (b board) Attacks(color string) uint64 {
+	var attacks uint64 = 0
 
-	allMoves = append(allMoves, pawnMoves(b, color)...)
-	allMoves = append(allMoves, rookMoves(b, color)...)
-	allMoves = append(allMoves, bishopMoves(b, color)...)
-	allMoves = append(allMoves, queenMoves(b, color)...)
-	allMoves = append(allMoves, knightMoves(b, color)...)
-	allMoves = append(allMoves, kingMoves(b, color)...)
+	attacks |= pawnAttacks(b, color)
+	attacks |= rookAttackBB(b, color)
+	attacks |= bishopAttackBB(b, color)
+	attacks |= queenAttackBB(b, color)
+	attacks |= knightAttackBB(b, color)
+	attacks |= kingAttackBB(b, color)
 
-	return allMoves
+	return attacks
 }
 
 /*
@@ -86,12 +90,12 @@ func attacks (b board, color string) []move {
 	will create a list of moves based on each bit in the resulting bitboard
 	being a valid destination
 */
-func generateMoves(bb uint64, fn func(uint64) uint64) []move {
+func bbToMoves(bb uint64, fn func(uint64) uint64) []move {
 	moves := make([]move, 0)
 
 	for bb > 0 {
 		square := bb & -bb
-		bb&= bb-1
+		bb &= bb-1
 
 		moves = append(moves, move{fn(square), square, ""})
 	}

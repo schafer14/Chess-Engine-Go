@@ -10,20 +10,9 @@ func castle(b board, color string) []move {
 	castleMoves := func(oppColor string, schedule int) []move {
 		var moves []move = make([]move, 0)
 		possibleCastle := true
-		attacks := attacks(b, oppColor)
 
-		for _, attack := range attacks {
-			if oppColor == "w" && (b.whitePawns << 7 | b.whitePawns << 9) & castlingAttackSquares[schedule] > 1 {
-				possibleCastle = false
-			}
-
-			if oppColor == "b" && (b.blackPawns >> 7 | b.blackPawns >> 9) & castlingAttackSquares[schedule] > 1 {
-				possibleCastle = false
-			}
-
-			if attack.to & castlingAttackSquares[schedule] > 0 {
-				possibleCastle = false
-			}
+		if b.Attacks(oppColor) & castlingAttackSquares[schedule] > 0 {
+			possibleCastle = false
 		}
 
 		if possibleCastle {

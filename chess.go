@@ -11,11 +11,10 @@ import (
 )
 
 var (
-	position = "4k2r/8/8/8/8/8/8/4K3 w k - 0 1 "
+	position = "rnbqkbnr/pppp1ppp/8/4p2Q/4P3/8/PPPP1PPP/RNB1KBNR b KQkq - 0 1 "
 )
 
 func main() {
-
 	if os.Args[1] == "perft" {
 		fmt.Println("Running Perft Test\n")
 		b.Perft()

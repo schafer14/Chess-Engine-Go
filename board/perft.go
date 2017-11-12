@@ -33,7 +33,7 @@ func Perft() {
 			expectedNumMoves , _ := strconv.Atoi(strings.Split(part, " ")[1])
 
 			start := time.Now()
-			actualNumMoves := bruteForceSearch(board, i)
+			actualNumMoves := perft(board, i)
 			end := time.Now()
 
 			if expectedNumMoves != actualNumMoves {
@@ -41,10 +41,6 @@ func Perft() {
 			}
 
 			fmt.Println(expectedNumMoves == actualNumMoves, i, expectedNumMoves, actualNumMoves, end.Sub(start))
-
-			if end.Sub(start).Seconds() > 10 {
-				break
-			}
 		}
 		fmt.Println("----------------")
 	}
@@ -53,9 +49,9 @@ func Perft() {
 
 func (b board) Divide (d int) error {
 	sum := 0
-	for _, m := range b.Moves() {
+	for _, m := range b.LegalMoves() {
 		nb := b.Move(m)
-		num := bruteForceSearch(nb, d - 1)
+		num := perft(nb, d - 1)
 		sum += num
 		fmt.Println(m.toString(), num)
 	}
@@ -64,17 +60,18 @@ func (b board) Divide (d int) error {
 	return nil
 }
 
-func bruteForceSearch(b board, d int) int {
+func perft(b board, d int) int {
 	if d == 0 {
 		return 1
-	} else if d == 1 {
-		return len(b.Moves())
-	} else {
-		moves := 0
-		for _, m := range b.Moves() {
-			nb := b.Move(m)
-			moves += bruteForceSearch(nb, d - 1)
-		}
-		return moves
 	}
+	nodes := 0
+
+	for _, m := range b.PseudoMoves() {
+		nb := b.Move(m)
+		if !nb.isInCheck() {
+			nodes += perft(nb, d - 1)
+		}
+	}
+
+	return nodes
 }

@@ -58,19 +58,19 @@ func pawnMoves(board board, color string) []move {
 
 	// Moving forward one square
 	forward1 := forwardN(bb, 8) & empty
-	moves = append(moves, generateMoves(forward1, backN(8 ))...)
+	moves = append(moves, bbToMoves(forward1, backN(8 ))...)
 
 	// Moving forward two squares
 	forward2 := forwardN(bb, 16) & empty & forwardN(empty, 8) & forwardN(startRank, 16)
-	moves = append(moves, generateMoves(forward2, backN(16 ))...)
+	moves = append(moves, bbToMoves(forward2, backN(16 ))...)
 
 	// Capturing Left (for white)
 	capLeft := forwardN(bb, 9) & ^cantCapLeft & opponents
-	moves = append(moves, generateMoves(capLeft, backN(9 ))...)
+	moves = append(moves, bbToMoves(capLeft, backN(9 ))...)
 
 	// Capturing Right (for white)
 	capRight := forwardN(bb, 7) & ^cantCapRight & opponents
-	moves = append(moves, generateMoves(capRight, backN(7 ))...)
+	moves = append(moves, bbToMoves(capRight, backN(7 ))...)
 
 	// Pawn promotion stuff.
 	if (forward1 | forward2 | capLeft | capRight) & finalRank > 0 {
@@ -91,4 +91,40 @@ func pawnMoves(board board, color string) []move {
 	}
 
 	return moves
+}
+
+
+func pawnAttacks(board board, color string) uint64 {
+	var direction bool
+	var bb uint64
+	var cantCapLeft uint64
+	var cantCapRight uint64
+
+	if color == "w" {
+		direction = true
+		bb = board.whitePawns
+		cantCapLeft = cols[0]
+		cantCapRight = cols[7]
+	} else {
+		direction = false
+		bb = board.blackPawns
+		cantCapLeft = cols[7]
+		cantCapRight = cols[0]
+	}
+
+	forwardN := func(bb uint64, n uint) uint64 {
+		if direction {
+			return bb << n
+		} else {
+			return bb >> n
+		}
+	}
+
+	// Capturing Left (for white)
+	capLeft := forwardN(bb, 9) & ^cantCapLeft
+
+	// Capturing Right (for white)
+	capRight := forwardN(bb, 7) & ^cantCapRight
+
+	return capLeft | capRight
 }
