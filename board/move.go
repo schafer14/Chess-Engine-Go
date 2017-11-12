@@ -1,7 +1,6 @@
 package board
 
 import (
-	"math"
 	"strconv"
 	"strings"
 )
@@ -143,13 +142,13 @@ func (b board) HumanFriendlyMove(move string) board {
 func (m move) toString () string {
 	str := ""
 
-	squareNumber := math.Log2(float64(m.from))
+	squareNumber := magic(m.from)
 	row := int(squareNumber / 8)
 	colNumber := int(squareNumber) % 8
 
 	str += columns[colNumber] + strconv.Itoa(row + 1)
 
-	squareNumber2 := math.Log2(float64(m.to))
+	squareNumber2 := magic(m.to)
 	row2 := int(squareNumber2 / 8)
 	colNumber2 := int(squareNumber2) % 8
 

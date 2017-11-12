@@ -106,11 +106,13 @@ func bbToMoves(bb uint64, fn func(uint64) uint64) []move {
 /*
 	Generates a bitboard containing all the legal straight moves.
 */
-func straightBB(occ uint64, square uint) uint64 {
-	forward := slideAttacks(occ, square, cols[square % 8])
-	right := slideAttacks(occ, square, ranks[square / 8])
-	backwards := reversSlideAttacks(occ, square, cols[square % 8])
-	left := reversSlideAttacks(occ, square, ranks[square / 8])
+func straightBB(occ uint64, square uint64) uint64 {
+	squareNum := magic(square)
+
+	forward := slideAttacks(occ, square, cols[squareNum % 8])
+	right := slideAttacks(occ, square, ranks[squareNum / 8])
+	backwards := reversSlideAttacks(occ, square, cols[squareNum % 8])
+	left := reversSlideAttacks(occ, square, ranks[squareNum / 8])
 
 	return forward | right | backwards | left
 }
@@ -118,9 +120,11 @@ func straightBB(occ uint64, square uint) uint64 {
 /*
 	Generates a bitboard containing all the legal straight moves.
 */
-func diagBB(occ uint64, square uint) uint64 {
-	mask := diag[((square / 8) - (square % 8)) & 15]
-	antiMask := antiDiag[7 ^ ((square / 8) + (square % 8))]
+func diagBB(occ uint64, square uint64) uint64 {
+	squareNum := magic(square)
+
+	mask := diag[((squareNum / 8) - (squareNum % 8)) & 15]
+	antiMask := antiDiag[7 ^ ((squareNum / 8) + (squareNum % 8))]
 
 	northEast := slideAttacks(occ, square, mask)
 	northWest := slideAttacks(occ, square, antiMask)
@@ -133,10 +137,10 @@ func diagBB(occ uint64, square uint) uint64 {
 /*
 	Generates move bitboard for sliding pieces using positive rays
 */
-func slideAttacks (occ uint64, square uint, mask uint64) uint64 {
+func slideAttacks (occ uint64, square uint64, mask uint64) uint64 {
 	potentialBlockers := occ & mask
 
-	diff := potentialBlockers - 2 * uint64(1 << square)
+	diff := potentialBlockers - 2 * square
 	changed := diff ^ occ
 
 	return changed & mask
@@ -145,9 +149,9 @@ func slideAttacks (occ uint64, square uint, mask uint64) uint64 {
 /*
 	Generates move bitboard for sliding pieces using negitive rays
 */
-func reversSlideAttacks(occ uint64, square uint, mask uint64) uint64 {
+func reversSlideAttacks(occ uint64, square uint64, mask uint64) uint64 {
 	o := bits.Reverse64(occ)
-	s := bits.Reverse64(1 << square)
+	s := bits.Reverse64(square)
 	mask = bits.Reverse64(mask)
 
 	potentialBlockers := o & mask

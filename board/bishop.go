@@ -1,6 +1,5 @@
 package board
 
-import "math"
 
 func bishopMoves(board board, color string) []move {
 	var friendly uint64
@@ -8,7 +7,7 @@ func bishopMoves(board board, color string) []move {
 	var occ uint64 = occupied(board)
 	var moves []move = make([]move, 0)
 
-	if (color == "w") {
+	if color == "w" {
 		bb = board.whiteBishops
 		friendly = whitePieces(board)
 	} else {
@@ -21,9 +20,7 @@ func bishopMoves(board board, color string) []move {
 		square := bb & -bb
 		bb&= bb-1
 
-		squareNum := uint(math.Log2(float64(square)))
-
-		moveBb := diagBB(occ, squareNum)
+		moveBb := diagBB(occ, square)
 		legalMovesBb := moveBb & (^friendly)
 
 		newMoves := bbToMoves(legalMovesBb, func(_ uint64) uint64 {
@@ -52,9 +49,7 @@ func bishopAttackBB(board board, color string) uint64 {
 		square := bb & -bb
 		bb&= bb-1
 
-		squareNum := uint(math.Log2(float64(square)))
-
-		attackBB |= diagBB(occ, squareNum)
+		attackBB |= diagBB(occ, square)
 	}
 
 	return attackBB

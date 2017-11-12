@@ -1,7 +1,5 @@
 package board
 
-import "math"
-
 func knightMoves(board board, color string) []move {
 	var friendly uint64
 	var bb uint64
@@ -20,7 +18,7 @@ func knightMoves(board board, color string) []move {
 		square := bb & -bb
 		bb&= bb-1
 
-		squareNum := uint(math.Log2(float64(square)))
+		squareNum := magic(square)
 
 		moveBb := knightAttacks[squareNum]
 		legalMovesBb := moveBb & (^friendly)
@@ -49,7 +47,7 @@ func knightAttackBB(board board, color string) uint64 {
 		square := bb & -bb
 		bb&= bb-1
 
-		squareNum := uint(math.Log2(float64(square)))
+		squareNum := magic(square)
 
 		attacks |= knightAttacks[squareNum]
 	}

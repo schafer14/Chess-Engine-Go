@@ -11,7 +11,7 @@ import (
 )
 
 var (
-	position = "rnbqkbnr/pppp1ppp/8/4p2Q/4P3/8/PPPP1PPP/RNB1KBNR b KQkq - 0 1 "
+	position = "rn2k1nr/pppppppp/8/8/8/8/PPPPPPPP/RNB1K1NR w KQkq - 0 1"
 )
 
 func main() {

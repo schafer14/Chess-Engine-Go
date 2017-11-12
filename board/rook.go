@@ -1,6 +1,5 @@
 package board
 
-import "math"
 
 func rookMoves(board board, color string) []move {
 	var friendly uint64
@@ -21,9 +20,7 @@ func rookMoves(board board, color string) []move {
 		square := bb & -bb
 		bb&= bb-1
 
-		squareNum := uint(math.Log2(float64(square)))
-
-		moveBb := straightBB(occ, squareNum)
+		moveBb := straightBB(occ, square)
 		legalMovesBb := moveBb & (^friendly)
 
 		newMoves := bbToMoves(legalMovesBb, func(_ uint64) uint64 {
@@ -52,9 +49,7 @@ func rookAttackBB(board board, color string) uint64 {
 		square := bb & -bb
 		bb&= bb-1
 
-		squareNum := uint(math.Log2(float64(square)))
-
-		attackBB |= straightBB(occ, squareNum)
+		attackBB |= straightBB(occ, square)
 	}
 
 	return attackBB
