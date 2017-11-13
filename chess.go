@@ -49,4 +49,8 @@ func main() {
 				}
 			}
 	}
+
+	if os.Args[1] == "uci" {
+		b.Uci()
+	}
 }

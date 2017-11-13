@@ -53,3 +53,10 @@ func bbToString(b uint64) string {
 func magic(b uint64) int {
 	return deBruijn[((b ^ (b - 1)) * 0x03F79D71B4CB0A89) >> 58]
 }
+
+func count(b uint64) int {
+	b -= (b >> 1) & 0x5555555555555555
+	b = ((b >> 2) & 0x3333333333333333) + (b & 0x3333333333333333)
+	b = ((b >> 4) + b) & 0x0F0F0F0F0F0F0F0F
+	return int((b * 0x0101010101010101) >> 56)
+}
