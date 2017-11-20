@@ -1,4 +1,4 @@
-package board
+package maurice
 
 import (
 	"io/ioutil"
@@ -6,13 +6,14 @@ import (
 	"strings"
 	"strconv"
 	"time"
+	"log"
 )
 
-func Perft() {
-	b, err := ioutil.ReadFile( "src/chess/board/perft.epd")
+func perft() {
+	b, err := ioutil.ReadFile( "perft.epd")
 
 	if err != nil {
-		fmt.Println(err)
+		log.Fatal(err)
 	}
 
 	positions := strings.Split(string(b), "\n")
@@ -26,14 +27,14 @@ func Perft() {
 
 		fmt.Println(p, "Checking board", fen)
 
-		board := FromFEN(fen)
+		board := PositionFromFEN(fen)
 
 		for i := 1; i < len(parts) && positive; i ++ {
 			part := parts[i]
 			expectedNumMoves , _ := strconv.Atoi(strings.Split(part, " ")[1])
 
 			start := time.Now()
-			actualNumMoves := perft(board, i)
+			actualNumMoves := board.Perft(i)
 			end := time.Now()
 
 			if expectedNumMoves != actualNumMoves {
@@ -47,11 +48,11 @@ func Perft() {
 
 }
 
-func (b board) Divide (d int) error {
+func (p Position) Divide (d int) error {
 	sum := 0
-	for _, m := range b.LegalMoves() {
-		nb := b.Move(m)
-		num := perft(nb, d - 1)
+	for _, m := range p.legalMoves() {
+		nb := p.Move(m)
+		num := nb.Perft(d - 1)
 		sum += num
 		fmt.Println(m.toString(), num)
 	}
@@ -60,16 +61,16 @@ func (b board) Divide (d int) error {
 	return nil
 }
 
-func perft(b board, d int) int {
+func (p Position)Perft(d int) int {
 	if d == 0 {
 		return 1
 	}
 	nodes := 0
 
-	for _, m := range b.PseudoMoves() {
-		nb := b.Move(m)
+	for _, m := range p.pseudoMoves() {
+		nb := p.Move(m)
 		if !nb.isInCheck() {
-			nodes += perft(nb, d - 1)
+			nodes += nb.Perft(d - 1)
 		}
 	}
 
