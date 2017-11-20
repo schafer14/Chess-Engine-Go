@@ -21,7 +21,7 @@ func (m Move) nil() bool {
 
 
 // TODO: REWRITE!!
-func (p *Position) Move(move Move) *Position {
+func (p Position) Move(move Move) Position {
 	newBoard := p
 
 	promotionOrder := [4]string {"K", "B", "R", "Q"}
