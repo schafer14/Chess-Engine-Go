@@ -33,40 +33,44 @@ func (p Position) Move(move Move) Position {
 			This is the piece being taken
 		*/
 		if pieceBB & move.to > 0 {
-			newBoard.pieceBitboards[i] = pieceBB & (^move.to)
+			newBoard.pieceBitboards[i] &= ^move.to
 		}
 
 		/*
 			This is the piece being moved
 		*/
 		if pieceBB & move.from > 0 && move.promotion == "" {
-			newBoard.pieceBitboards[i] = (pieceBB & (^move.from)) | move.to
+			newBoard.pieceBitboards[i] &= ^move.from
+			newBoard.pieceBitboards[i] |=  move.to
 		}
 
 		/*
 			This if statement handles promotion
 		*/
 		if pieceBB & move.from > 0 && move.promotion != "" {
-			newBoard.pieceBitboards[i] = pieceBB & (^move.from)
+			newBoard.pieceBitboards[i] &= ^move.from
+		}
+	}
 
-			for i1, pro := range promotionOrder {
-				if pro == move.promotion {
-					var indexAdder int = 1
-					if p.color == 0 {
-						indexAdder = 0
-					}
-					var pieceIndex = 2 * i1 + 2 + indexAdder
-					newBoard.pieceBitboards[pieceIndex] |= move.to
-				}
+
+	if move.promotion != "" {
+		for i1, pro := range promotionOrder {
+			if pro == move.promotion {
+				var pieceIndex = 2 * i1 + 5 + p.color
+				newBoard.pieceBitboards[pieceIndex] |= move.to
+				newBoard.pieceBitboards[p.color + 1] |= move.to
 			}
 		}
 	}
 
+
 	// Remove En Passent Piece
 	if move.to == p.enPassent && move.from & p.pawns(0) > 0 {
-		newBoard.pieceBitboards[1] = p.pawns(1) ^ p.enPassent >> 8
+		newBoard.pieceBitboards[4] = p.pawns(1) ^ p.enPassent >> 8
+		newBoard.pieceBitboards[2] ^= p.enPassent >> 8
 	} else if  move.to == p.enPassent && move.from & p.pawns(1) > 0 {
-		newBoard.pieceBitboards[0] = p.pawns(0) ^ p.enPassent << 8
+		newBoard.pieceBitboards[3] = p.pawns(0) ^ p.enPassent << 8
+		newBoard.pieceBitboards[1] ^= p.enPassent << 8
 	}
 
 
@@ -81,33 +85,48 @@ func (p Position) Move(move Move) Position {
 
 
 	// White king movements
-	if newBoard.kings(0) & move.from > 0 {
-		// Castle right
-		if move.from == 0x10 && move.to == 0x40 {
-			newBoard.pieceBitboards[9] = newBoard.pieceBitboards[9] & ^Bitboard(0x80) | 0x20
+	if newBoard.kings(0) & move.to > 0 {
+		// Castle short
+		if move.from == Bitboard(0x10) && move.to == Bitboard(0x40) {
+			newBoard.pieceBitboards[9] &= ^Bitboard(0x80)
+			newBoard.pieceBitboards[9] |= 0x20
+			newBoard.pieceBitboards[1] &= ^Bitboard(0x80)
+			newBoard.pieceBitboards[1] |= 0x20
 		}
 
+		// Castle long
 		if move.from == 0x10 && move.to == 0x4 {
-			newBoard.pieceBitboards[9] = newBoard.pieceBitboards[9] & ^Bitboard(0x1) | 0x08
+			newBoard.pieceBitboards[9] &= ^Bitboard(0x1)
+			newBoard.pieceBitboards[9] |= 0x08
+			newBoard.pieceBitboards[1] &= ^Bitboard(0x1)
+			newBoard.pieceBitboards[1] |= 0x08
 		}
 
-		newBoard.pieceBitboards[13] = newBoard.kings(0) & (^move.from) | move.to
+		newBoard.pieceBitboards[13] &= ^move.from
+		newBoard.pieceBitboards[13] |=  move.to
 		newBoard.castlingRights[0] = false
 		newBoard.castlingRights[1] = false
 	}
 
 	// Black king movements
-	if newBoard.kings(1) & move.from > 0 {
+	if newBoard.kings(1) & move.to > 0 {
 		// Castle right
 		if move.from == 0x1000000000000000 && move.to == 0x4000000000000000 {
-			newBoard.pieceBitboards[10] = newBoard.pieceBitboards[10] & ^Bitboard(0x8000000000000000) | 0x2000000000000000
+			newBoard.pieceBitboards[10] &= ^Bitboard(0x8000000000000000)
+			newBoard.pieceBitboards[10] |=  0x2000000000000000
+			newBoard.pieceBitboards[2] &= ^Bitboard(0x8000000000000000)
+			newBoard.pieceBitboards[2] |=  0x2000000000000000
 		}
 
 		if move.from == 0x1000000000000000 && move.to == 0x400000000000000 {
-			newBoard.pieceBitboards[10] = newBoard.pieceBitboards[10] & ^Bitboard(0x100000000000000) | 0x0800000000000000
+			newBoard.pieceBitboards[10] &= ^Bitboard(0x100000000000000)
+			newBoard.pieceBitboards[10] |=  0x0800000000000000
+			newBoard.pieceBitboards[2] &= ^Bitboard(0x100000000000000)
+			newBoard.pieceBitboards[2] |=  0x0800000000000000
 		}
 
-		newBoard.pieceBitboards[14] = newBoard.kings(1) & (^move.from) | move.to
+		newBoard.pieceBitboards[14] &=  ^move.from
+		newBoard.pieceBitboards[14] |= move.to
 		newBoard.castlingRights[2] = false
 		newBoard.castlingRights[3] = false
 	}

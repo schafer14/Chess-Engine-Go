@@ -1,6 +1,5 @@
 package maurice
 
-
 func (p Position) kingMoves() []Move {
 	var friendly Bitboard = p.attackers()
 	var bb Bitboard = p.kings(p.color)
@@ -33,7 +32,6 @@ func (p Position)kingAttacks(color int) Bitboard {
 		square := bb & -bb
 		squareNum := square.firstSquare()
 		bb&= bb-1
-
 
 		attackBB |= kingAttacks[squareNum]
 	}
