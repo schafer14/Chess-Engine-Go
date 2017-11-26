@@ -1,6 +1,6 @@
 package maurice
 
-
+import "fmt"
 
 func (p Position) HumanFriendlyMoves() []string {
 	allMoves := p.legalMoves()
@@ -21,16 +21,13 @@ func (p Position) legalMoves() []Move {
 	for _, m := range allMoves {
 		isLegal := true
 		nb := p.Move(m)
-		var kings Bitboard
-
-		if nb.color == 0 {
-			kings = nb.kings(1)
-		} else {
-			kings = nb.kings(0)
-		}
+		kings := p.pieceBitboards[King + p.color]
 
 		if nb.attacks(nb.color) & kings > 0 {
 			isLegal = false
+			nb.attacks(nb.color).Draw()
+			fmt.Println(m.toString())
+			fmt.Println("ILLEGAL")
 		}
 
 		if isLegal {
@@ -38,13 +35,12 @@ func (p Position) legalMoves() []Move {
 		}
 	}
 
-
-
 	return legalMoves
 }
 
 func (p Position) pseudoMoves() []Move {
 	allMoves := make([]Move, 0)
+
 	allMoves = append(allMoves, p.pawnMoves()...)
 	allMoves = append(allMoves, p.knightMoves()...)
 	allMoves = append(allMoves, p.bishopMoves()...)
@@ -76,14 +72,15 @@ func (p Position) attacks(color int) Bitboard {
 	will create a list of moves based on each bit in the resulting bitboard
 	being a valid destination
 */
-func movesFromBitboard(bb Bitboard, fn func(Bitboard) Bitboard) []Move {
+func (p Position)movesFromBitboard(bb Bitboard, fn func(Bitboard) Bitboard) []Move {
 	moves := make([]Move, 0)
 
 	for bb > 0 {
 		square := bb & -bb
 		bb &= bb-1
+		num := square.firstSquare()
 
-		moves = append(moves, Move{fn(square), square, ""})
+		moves = append(moves, NewMove(p, fn(square).firstSquare(),  num))
 	}
 
 	return moves

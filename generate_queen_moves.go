@@ -2,7 +2,7 @@ package maurice
 
 func (p Position)queenMoves() []Move {
 	var friendly = p.attackers()
-	var bb = p.queens(p.color)
+	var bb = p.pieceBitboards[Queen + p.color]
 	var occ = p.occupied()
 	var moves = make([]Move, 0)
 
@@ -22,7 +22,7 @@ func (p Position)queenMoves() []Move {
 
 		legalMovesBb := moveBb & (^friendly)
 
-		newMoves := movesFromBitboard(legalMovesBb, func(_ Bitboard) Bitboard{
+		newMoves := p.movesFromBitboard(legalMovesBb, func(_ Bitboard) Bitboard{
 			return square
 		})
 
@@ -33,7 +33,7 @@ func (p Position)queenMoves() []Move {
 }
 
 func (p Position)queenAttacks(color int) Bitboard {
-	bb := p.queens(color)
+	bb := p.pieceBitboards[Queen + color]
 	occ := p.occupied()
 	attackBB := Bitboard(0)
 

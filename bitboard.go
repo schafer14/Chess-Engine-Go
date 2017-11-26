@@ -103,7 +103,7 @@ func bbFromInts(row int, col int) Bitboard {
 	return Bitboard(uint64(1 << uint(square)))
 }
 
-func bbFromString(str string) Bitboard {
+func squareFromString(str string) int {
 	char := string(str[0])
 	var row int = 0
 
@@ -116,5 +116,5 @@ func bbFromString(str string) Bitboard {
 
 	col, _ := strconv.Atoi(string(str[1]))
 
-	return bbFromInts(row, col - 1)
+	return row * 8 + col
 }

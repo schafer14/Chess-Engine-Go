@@ -15,6 +15,11 @@ var castlingAttackSquares = [4]Bitboard { 0x70, 0x1c, 0x7000000000000000, 0x1c00
 var castlingFromSquare = [4]Bitboard { 0x10, 0x10, 0x1000000000000000,0x1000000000000000 }
 var castlingToSquare = [4]Bitboard { 0x40, 0x04,0x4000000000000000, 0x0400000000000000 }
 
+// Maps from a unicode character to the
+// index in  the pieceBitboard
+var pieceMap = map[int]int {0x50: 2,0x70: 3,0x4E: 4,0x6E: 5,0x42: 6,0x62: 7,0x52: 8,0x72: 9,0x51: 10,0x71: 11,0x4B: 12,0x6B: 13,}
+
+
 
 
 var initialFEN = "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1"

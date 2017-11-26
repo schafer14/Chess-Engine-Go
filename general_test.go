@@ -5,7 +5,6 @@ import (
 	"github.com/pkg/profile"
 )
 
-
 func TestStuff(t *testing.T) {
 	perft()
 }

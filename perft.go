@@ -1,12 +1,12 @@
 package maurice
 
 import (
-	"io/ioutil"
+	"time"
 	"fmt"
+	"io/ioutil"
+	"log"
 	"strings"
 	"strconv"
-	"time"
-	"log"
 )
 
 func perft() {
@@ -66,9 +66,10 @@ func (p Position)Perft(d int) int {
 		return 1
 	}
 	nodes := 0
+	px := &p
 
 	for _, m := range p.pseudoMoves() {
-		nb := p.Move(m)
+		nb := px.Move(m)
 		if !nb.isInCheck() {
 			nodes += nb.Perft(d - 1)
 		}

@@ -36,6 +36,8 @@ func main() {
 				p.Draw()
 			case "r":
 				p = maurice.PositionFromFEN(position)
+			case "s":
+				fmt.Println(p.ToFen())
 			case "divide":
 				i, _ := strconv.Atoi(strings.TrimSpace(args[1]))
 				p.Divide(i)

@@ -3,7 +3,7 @@ package maurice
 
 func (p Position)knightMoves() []Move {
 	var friendly = p.attackers()
-	var bb = p.knights(p.color)
+	var bb = p.pieceBitboards[Knight + p.color]
 	var moves []Move
 
 
@@ -16,7 +16,7 @@ func (p Position)knightMoves() []Move {
 		moveBb := knightAttacks[squareNum]
 		legalMovesBb := moveBb & (^friendly)
 
-		newMoves := movesFromBitboard(legalMovesBb, func(_ Bitboard) Bitboard{
+		newMoves := p.movesFromBitboard(legalMovesBb, func(_ Bitboard) Bitboard{
 			return square
 		})
 
@@ -28,7 +28,7 @@ func (p Position)knightMoves() []Move {
 }
 
 func (p Position) knightAttacks(color int) Bitboard {
-	var bb Bitboard = p.knights(color)
+	var bb Bitboard = p.pieceBitboards[Knight + color]
 	var attacks Bitboard = 0
 
 	for bb > 0 {
