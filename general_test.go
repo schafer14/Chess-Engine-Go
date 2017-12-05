@@ -1,8 +1,8 @@
 package maurice
 
 import (
-	"testing"
 	"github.com/pkg/profile"
+	"testing"
 )
 
 func TestStuff(t *testing.T) {
@@ -14,7 +14,6 @@ func BenchmarkPawnMoves(b *testing.B) {
 
 	position := "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1"
 	p := PositionFromFEN(position)
-
 
 	p.Perft(5)
 }

@@ -9,7 +9,7 @@ func init() {
 }
 
 func initMagic() {
-	for i := 0; i < 64; i ++ {
+	for i := 0; i < 64; i++ {
 		buildBitBoardSquare(i, "rook")
 		buildBitBoardSquare(i, "bishop")
 	}
@@ -48,29 +48,27 @@ func buildBitBoardSquare(square int, piece string) {
 	}
 }
 
-
-func getPermutations(set Bitboard, mutable Bitboard) []Bitboard{
+func getPermutations(set Bitboard, mutable Bitboard) []Bitboard {
 	if mutable.count() == 0 {
-		return []Bitboard { set }
+		return []Bitboard{set}
 	}
 
 	bit := mutable & -mutable
 	mutable ^= bit
 
-	withBitSet := getPermutations(set | bit, mutable)
+	withBitSet := getPermutations(set|bit, mutable)
 	withoutBitSet := getPermutations(set, mutable)
 
 	return append(withBitSet, withoutBitSet...)
 }
 
-
-func straightBB(occ Bitboard, square Bitboard) Bitboard{
+func straightBB(occ Bitboard, square Bitboard) Bitboard {
 	squareNum := bits.TrailingZeros64(uint64(square))
 
-	forward := slideAttacks(occ, square, columns[squareNum % 8])
-	right := slideAttacks(occ, square, ranks[squareNum / 8])
-	backwards := reversSlideAttacks(occ, square, columns[squareNum % 8])
-	left := reversSlideAttacks(occ, square, ranks[squareNum / 8])
+	forward := slideAttacks(occ, square, columns[squareNum%8])
+	right := slideAttacks(occ, square, ranks[squareNum/8])
+	backwards := reversSlideAttacks(occ, square, columns[squareNum%8])
+	left := reversSlideAttacks(occ, square, ranks[squareNum/8])
 
 	return forward | right | backwards | left
 }
@@ -78,11 +76,11 @@ func straightBB(occ Bitboard, square Bitboard) Bitboard{
 /*
 	Generates a bitboard containing all the legal straight moves.
 */
-func diagBB(occ Bitboard, square Bitboard) Bitboard{
+func diagBB(occ Bitboard, square Bitboard) Bitboard {
 	squareNum := bits.TrailingZeros64(uint64(square))
 
-	mask := diag[((squareNum / 8) - (squareNum % 8)) & 15]
-	antiMask := antiDiag[7 ^ ((squareNum / 8) + (squareNum % 8))]
+	mask := diag[((squareNum/8)-(squareNum%8))&15]
+	antiMask := antiDiag[7^((squareNum/8)+(squareNum%8))]
 
 	northEast := slideAttacks(occ, square, mask)
 	northWest := slideAttacks(occ, square, antiMask)
@@ -92,14 +90,13 @@ func diagBB(occ Bitboard, square Bitboard) Bitboard{
 	return northEast | southWest | northWest | southEast
 }
 
-
 /*
 	Generates move bitboard for sliding pieces using positive rays
 */
-func slideAttacks (occ Bitboard, square Bitboard, mask Bitboard) Bitboard{
+func slideAttacks(occ Bitboard, square Bitboard, mask Bitboard) Bitboard {
 	potentialBlockers := occ & mask
 
-	diff := potentialBlockers - 2 * square
+	diff := potentialBlockers - 2*square
 	changed := diff ^ occ
 
 	return changed & mask

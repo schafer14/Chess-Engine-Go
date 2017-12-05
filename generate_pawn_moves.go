@@ -5,8 +5,8 @@ func (p Position) pawnMoves() []Move {
 	moves := make([]Move, 0)
 	empty := p.empty()
 	var direction bool
-	var bb = p.pieceBitboards[Pawn + p.color]
-	var opponents = p.defenders() | (1<<p.enPassent)
+	var bb = p.pieceBitboards[Pawn+p.color]
+	var opponents = p.defenders() | (1 << p.enPassent)
 	var finalRank Bitboard
 	var startRank Bitboard
 	var cantCapLeft Bitboard
@@ -30,7 +30,7 @@ func (p Position) pawnMoves() []Move {
 		Will return a function that shifts an uint64 by n
 		in the direction specified
 	*/
-	backN := func(n uint) func(bitboard Bitboard) Bitboard{
+	backN := func(n uint) func(bitboard Bitboard) Bitboard {
 		return func(sq Bitboard) Bitboard {
 			if direction {
 				return sq >> n
@@ -50,30 +50,29 @@ func (p Position) pawnMoves() []Move {
 
 	// Moving forward one square
 	forward1 := forwardN(bb, 8) & empty
-	moves = append(moves, p.movesFromBitboard(forward1, backN(8 ))...)
+	moves = append(moves, p.movesFromBitboard(forward1, backN(8))...)
 
 	// Moving forward two squares
 	forward2 := forwardN(bb, 16) & empty & forwardN(empty, 8) & forwardN(startRank, 16)
-	moves = append(moves, p.movesFromBitboard(forward2, backN(16 ))...)
+	moves = append(moves, p.movesFromBitboard(forward2, backN(16))...)
 
 	// Capturing Left (for white)
 	capLeft := forwardN(bb, 9) & ^cantCapLeft & opponents
-	moves = append(moves, p.movesFromBitboard(capLeft, backN(9 ))...)
+	moves = append(moves, p.movesFromBitboard(capLeft, backN(9))...)
 
 	// Capturing Right (for white)
 	capRight := forwardN(bb, 7) & ^cantCapRight & opponents
-	moves = append(moves, p.movesFromBitboard(capRight, backN(7 ))...)
+	moves = append(moves, p.movesFromBitboard(capRight, backN(7))...)
 
 	// Pawn promotion stuff. TODO: REWRITE
-	if (forward1 | forward2 | capLeft | capRight) & finalRank > 0 {
+	if (forward1|forward2|capLeft|capRight)&finalRank > 0 {
 		oldMoves := moves
 		moves = make([]Move, 0)
-
 
 		for _, m := range oldMoves {
 			_, to, _, _ := m.split()
 
-			if 1 << to & finalRank > 0 {
+			if 1<<to&finalRank > 0 {
 				moves = append(moves, m.Promote(p.color)...)
 			} else {
 				moves = append(moves, m)
@@ -84,10 +83,9 @@ func (p Position) pawnMoves() []Move {
 	return moves
 }
 
-
 func (p Position) pawnAttacks(color int) Bitboard {
 	var direction bool
-	var bb Bitboard = p.pieceBitboards[Pawn + color]
+	var bb Bitboard = p.pieceBitboards[Pawn+color]
 	var cantCapLeft Bitboard
 	var cantCapRight Bitboard
 

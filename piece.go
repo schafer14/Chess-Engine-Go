@@ -1,6 +1,5 @@
 package maurice
 
-
 type Piece uint8
 
 const (
@@ -20,8 +19,8 @@ const (
 	BlackKing
 )
 
-var charMap = [14]string{ " ", " ", "P", "p", "N", "n", "B", "b", "R", "r", "Q", "q", "K", "k",}
-var symbolMap = [14]string{ " ", " ", "♙", "♟", "♘", "♞", "♗", "♝", "♖", "♜", "♕", "♛", "♔", "♚",}
+var charMap = [14]string{" ", " ", "P", "p", "N", "n", "B", "b", "R", "r", "Q", "q", "K", "k"}
+var symbolMap = [14]string{" ", " ", "♙", "♟", "♘", "♞", "♗", "♝", "♖", "♜", "♕", "♛", "♔", "♚"}
 
 func pawn(color int) Piece {
 	return Piece(Pawn + color)

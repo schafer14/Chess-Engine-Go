@@ -21,9 +21,9 @@ func (p Position) legalMoves() []Move {
 	for _, m := range allMoves {
 		isLegal := true
 		nb := p.Move(m)
-		kings := p.pieceBitboards[King + p.color]
+		kings := p.pieceBitboards[King+p.color]
 
-		if nb.attacks(nb.color) & kings > 0 {
+		if nb.attacks(nb.color)&kings > 0 {
 			isLegal = false
 			nb.attacks(nb.color).Draw()
 			fmt.Println(m.toString())
@@ -50,7 +50,6 @@ func (p Position) pseudoMoves() []Move {
 
 	allMoves = append(allMoves, p.castle()...)
 
-
 	return allMoves
 }
 
@@ -72,15 +71,15 @@ func (p Position) attacks(color int) Bitboard {
 	will create a list of moves based on each bit in the resulting bitboard
 	being a valid destination
 */
-func (p Position)movesFromBitboard(bb Bitboard, fn func(Bitboard) Bitboard) []Move {
+func (p Position) movesFromBitboard(bb Bitboard, fn func(Bitboard) Bitboard) []Move {
 	moves := make([]Move, 0)
 
 	for bb > 0 {
 		square := bb & -bb
-		bb &= bb-1
+		bb &= bb - 1
 		num := square.firstSquare()
 
-		moves = append(moves, NewMove(p, fn(square).firstSquare(),  num))
+		moves = append(moves, NewMove(p, fn(square).firstSquare(), num))
 	}
 
 	return moves

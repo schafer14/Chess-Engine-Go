@@ -1,16 +1,16 @@
 package maurice
 
 import (
-	"time"
 	"fmt"
 	"io/ioutil"
 	"log"
-	"strings"
 	"strconv"
+	"strings"
+	"time"
 )
 
 func perft() {
-	b, err := ioutil.ReadFile( "perft.epd")
+	b, err := ioutil.ReadFile("perft.epd")
 
 	if err != nil {
 		log.Fatal(err)
@@ -19,7 +19,7 @@ func perft() {
 	positions := strings.Split(string(b), "\n")
 	positive := true
 
-	for p := 0; p < len(positions) && positive; p ++ {
+	for p := 0; p < len(positions) && positive; p++ {
 		position := positions[p]
 
 		parts := strings.Split(position, ";")
@@ -29,9 +29,9 @@ func perft() {
 
 		board := PositionFromFEN(fen)
 
-		for i := 1; i < len(parts) && positive; i ++ {
+		for i := 1; i < len(parts) && positive; i++ {
 			part := parts[i]
-			expectedNumMoves , _ := strconv.Atoi(strings.Split(part, " ")[1])
+			expectedNumMoves, _ := strconv.Atoi(strings.Split(part, " ")[1])
 
 			start := time.Now()
 			actualNumMoves := board.Perft(i)
@@ -48,7 +48,7 @@ func perft() {
 
 }
 
-func (p Position) Divide (d int) error {
+func (p Position) Divide(d int) error {
 	sum := 0
 	for _, m := range p.legalMoves() {
 		nb := p.Move(m)
@@ -61,15 +61,14 @@ func (p Position) Divide (d int) error {
 	return nil
 }
 
-func (p Position)Perft(d int) int {
+func (p Position) Perft(d int) int {
 	if d == 0 {
 		return 1
 	}
 	nodes := 0
-	px := &p
 
 	for _, m := range p.pseudoMoves() {
-		nb := px.Move(m)
+		nb := p.Move(m)
 		if !nb.isInCheck() {
 			nodes += nb.Perft(d - 1)
 		}

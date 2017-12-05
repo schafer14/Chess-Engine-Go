@@ -15,7 +15,6 @@ const (
 	isEnpassant = 0x20000000
 )
 
-
 // Taken from Donna chess engine.
 // Bits 00:00:00:FF => Source square (0 .. 63).
 // Bits 00:00:FF:00 => Destination square (0 .. 63).
@@ -40,12 +39,12 @@ func NewMove(p Position, from int, to int) Move {
 	enPassent := 0
 	castle := 0
 
-	if piece == pawn(p.color) && int(p.enPassent) == to && p.enPassent > 0  {
+	if piece == pawn(p.color) && int(p.enPassent) == to && p.enPassent > 0 {
 		captured = pawn(p.oppColor())
 		enPassent = isEnpassant
 	}
 
-	if piece == king(p.color) && math.Abs(float64(from - to)) == 2 {
+	if piece == king(p.color) && math.Abs(float64(from-to)) == 2 {
 		castle = isCastle
 	}
 
@@ -64,7 +63,7 @@ func NewMovePromotion(p Position, from int, to int, promo string) Move {
 	if promo == "B" || promo == "b" {
 		move |= Bishop << 24
 	}
-	if promo == "N" || promo == "n"  {
+	if promo == "N" || promo == "n" {
 		move |= Knight << 24
 	}
 
@@ -72,14 +71,13 @@ func NewMovePromotion(p Position, from int, to int, promo string) Move {
 }
 
 func (m Move) Promote(color int) []Move {
-	return []Move {
-		m | Move(Queen << 24),
-		m | Move(Rook << 24),
-		m | Move(Bishop << 24),
-		m | Move(Knight << 24),
+	return []Move{
+		m | Move(Queen<<24),
+		m | Move(Rook<<24),
+		m | Move(Bishop<<24),
+		m | Move(Knight<<24),
 	}
 }
-
 
 func (p Position) Move(move Move) Position {
 	from, to, piece, capture := move.split()
@@ -91,10 +89,10 @@ func (p Position) Move(move Move) Position {
 	}
 
 	if move.isEnpassent() && p.enPassent > 0 {
-		enPassentSquare := p.enPassent - 8 * uint8(1 - 2 * p.color)
+		enPassentSquare := p.enPassent - 8*uint8(1-2*p.color)
 		p.pieces[enPassentSquare] = 0
 		p.pieceBitboards[p.oppColor()] &= ^(1 << enPassentSquare)
-		p.pieceBitboards[Pawn + p.oppColor()] &= ^(1 << enPassentSquare)
+		p.pieceBitboards[Pawn+p.oppColor()] &= ^(1 << enPassentSquare)
 	}
 
 	p.pieceBitboards[piece] &= ^(1 << from)
@@ -173,8 +171,8 @@ func (p Position) Move(move Move) Position {
 	}
 
 	// Setting enPassent target
-	if (piece == Pawn || piece == BlackPawn) && math.Abs(float64(from) - float64(to)) == 16 {
-		p.enPassent = uint8(from) + 8 * uint8(1 - 2 * p.color)
+	if (piece == Pawn || piece == BlackPawn) && math.Abs(float64(from)-float64(to)) == 16 {
+		p.enPassent = uint8(from) + 8*uint8(1-2*p.color)
 	} else {
 		p.enPassent = 0
 	}
@@ -184,7 +182,7 @@ func (p Position) Move(move Move) Position {
 	return p
 }
 
-func (m Move)split() (uint, uint, Piece, Piece) {
+func (m Move) split() (uint, uint, Piece, Piece) {
 	from := uint(0xFF & m)
 	to := uint(0xFF & (m >> 8))
 	movingPiece := 0xF & (m >> 16)
@@ -193,19 +191,19 @@ func (m Move)split() (uint, uint, Piece, Piece) {
 	return from, to, Piece(movingPiece), Piece(capturedPiece)
 }
 
-func (m Move)isEnpassent() bool {
+func (m Move) isEnpassent() bool {
 	return (m & isEnpassant) > 0
 }
 
-func (m Move)isCastle() bool {
+func (m Move) isCastle() bool {
 	return (m & isCastle) > 0
 }
 
-func (m Move)isPromotion() bool {
+func (m Move) isPromotion() bool {
 	return (m & isPromo) > 0
 }
 
-func (m Move)promotionPiece() Piece {
+func (m Move) promotionPiece() Piece {
 	return Piece((m & isPromo) >> 24)
 }
 
@@ -233,9 +231,8 @@ func (p Position) moveFromString(m string) Move {
 	fromRank, _ := strconv.Atoi(string(m[1]))
 	toRank, _ := strconv.Atoi(string(m[3]))
 
-	fromSquare := 8 * (fromRank - 1) + fromFile
-	toSquare := 8 * (toRank - 1) + toFile
-
+	fromSquare := 8*(fromRank-1) + fromFile
+	toSquare := 8*(toRank-1) + toFile
 
 	if len(strings.TrimSpace(m)) > 4 {
 		return NewMovePromotion(p, fromSquare, toSquare, string(m[4]))

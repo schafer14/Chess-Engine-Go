@@ -2,8 +2,8 @@ package maurice
 
 import (
 	"fmt"
-	"strings"
 	"strconv"
+	"strings"
 )
 
 func PositionFromFEN(fen string) Position {
@@ -16,7 +16,7 @@ func PositionFromFEN(fen string) Position {
 		square := bbFromInts(7-i, 0)
 		squareNum := (7 - i) * 8
 
-		for _, c:= range row {
+		for _, c := range row {
 			switch {
 			// Matches unicode for characters between 0-9
 			case c >= 0x30 && c <= 0x39:
@@ -79,11 +79,11 @@ func PositionFromFEN(fen string) Position {
 func (p Position) ToFen() string {
 	str := ""
 
-	for row := 7; row >= 0; row -- {
+	for row := 7; row >= 0; row-- {
 		count := 0
 
-		for col := 0; col < 8; col ++ {
-			piece := p.pieces[row * 8 + col]
+		for col := 0; col < 8; col++ {
+			piece := p.pieces[row*8+col]
 
 			if count > 0 && piece > 0 {
 				str += strconv.Itoa(count)
@@ -149,10 +149,10 @@ func (p Position) ToFen() string {
 func (p Position) Draw() {
 	for row := 7; row >= 0; row-- {
 
-		fmt.Print(row + 1, " ")
+		fmt.Print(row+1, " ")
 
-		for col := 0; col < 8; col ++ {
-			piece := p.pieces[row * 8 + col]
+		for col := 0; col < 8; col++ {
+			piece := p.pieces[row*8+col]
 			fmt.Print(piece.symbol() + " ")
 		}
 		fmt.Println()

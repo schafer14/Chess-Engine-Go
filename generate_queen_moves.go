@@ -1,16 +1,15 @@
 package maurice
 
-func (p Position)queenMoves() []Move {
+func (p Position) queenMoves() []Move {
 	var friendly = p.attackers()
-	var bb = p.pieceBitboards[Queen + p.color]
+	var bb = p.pieceBitboards[Queen+p.color]
 	var occ = p.occupied()
 	var moves = make([]Move, 0)
 
 	for bb > 0 {
 		square := bb & -bb
 		squareNum := square.firstSquare()
-		bb&= bb-1
-
+		bb &= bb - 1
 
 		blockerB := occ & (bishopMagic[squareNum].mask)
 		indexB := (blockerB * bishopMagic[squareNum].magic) >> 55
@@ -22,7 +21,7 @@ func (p Position)queenMoves() []Move {
 
 		legalMovesBb := moveBb & (^friendly)
 
-		newMoves := p.movesFromBitboard(legalMovesBb, func(_ Bitboard) Bitboard{
+		newMoves := p.movesFromBitboard(legalMovesBb, func(_ Bitboard) Bitboard {
 			return square
 		})
 
@@ -32,15 +31,15 @@ func (p Position)queenMoves() []Move {
 	return moves
 }
 
-func (p Position)queenAttacks(color int) Bitboard {
-	bb := p.pieceBitboards[Queen + color]
+func (p Position) queenAttacks(color int) Bitboard {
+	bb := p.pieceBitboards[Queen+color]
 	occ := p.occupied()
 	attackBB := Bitboard(0)
 
 	for bb > 0 {
 		square := bb & -bb
 		squareNum := square.firstSquare()
-		bb&= bb-1
+		bb &= bb - 1
 
 		blockerB := occ & (bishopMagic[squareNum].mask)
 		indexB := (blockerB * bishopMagic[squareNum].magic) >> 55
