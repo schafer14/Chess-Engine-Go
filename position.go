@@ -1,6 +1,9 @@
 package maurice
 
-import "strconv"
+import (
+	"errors"
+	"strconv"
+)
 
 type Position struct {
 	positionHash   uint64       // Position Hash
@@ -14,6 +17,43 @@ type Position struct {
 	enPassent      uint8 // A bitboard containing available en passent moves
 	castlingRights [4]bool
 	count50        uint8
+}
+
+func (p Position) IsTerminal() bool {
+	return len(p.legalMoves()) == 0
+}
+
+func (p Position) Result() (error, float64) {
+	if !p.IsTerminal() {
+		return errors.New("Position is not terminal"), 0
+	}
+
+	if !p.isInCheck() {
+		return nil, 0.5
+	}
+
+	if p.color == 0 {
+		return nil, 1
+	}
+
+	return nil, 0
+}
+
+func (p Position) Move(move string) error {
+	p.HumanFriendlyMove(move)
+	return nil
+}
+
+func (p Position) PossibleMoves() []string {
+	return p.HumanFriendlyMoves()
+}
+
+func (p Position) State() string {
+	return p.ToFen()
+}
+
+func (p Position) Turn() int {
+	return p.color
 }
 
 func (p Position) attackers() Bitboard {

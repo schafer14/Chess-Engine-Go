@@ -20,7 +20,7 @@ func (p Position) legalMoves() []Move {
 
 	for _, m := range allMoves {
 		isLegal := true
-		nb := p.Move(m)
+		nb := p.makeMove(m)
 		kings := p.pieceBitboards[King+p.color]
 
 		if nb.attacks(nb.color)&kings > 0 {

@@ -79,7 +79,7 @@ func (m Move) Promote(color int) []Move {
 	}
 }
 
-func (p Position) Move(move Move) Position {
+func (p Position) makeMove(move Move) Position {
 	from, to, piece, capture := move.split()
 
 	if capture != 0 {
@@ -210,7 +210,7 @@ func (m Move) promotionPiece() Piece {
 func (p Position) HumanFriendlyMove(move string) Position {
 	m := p.moveFromString(move)
 
-	return p.Move(m)
+	return p.makeMove(m)
 }
 
 func (p Position) moveFromString(m string) Move {

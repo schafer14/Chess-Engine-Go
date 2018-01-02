@@ -6,6 +6,10 @@ import (
 	"strings"
 )
 
+func InitialPosition() Position {
+	return PositionFromFEN(initialFEN)
+}
+
 func PositionFromFEN(fen string) Position {
 	position := Position{}
 	// Get list of each field in Fen String
@@ -68,7 +72,7 @@ func PositionFromFEN(fen string) Position {
 		position.enPassent = uint8(squareFromString(fields[3]))
 	}
 	//
-	//// Set Half Move Count
+	//// Set Half makeMove Count
 	halfMoves, _ := strconv.ParseInt(fields[4], 10, 32)
 
 	position.count50 = uint8(halfMoves)
