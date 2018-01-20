@@ -2,14 +2,14 @@ package maurice
 
 func (p Position) knightMoves() []Move {
 	var friendly = p.attackers()
-	var bb = p.pieceBitboards[Knight+p.color]
+	var bb = p.PieceBitboards[Knight+p.color]
 	var moves []Move
 
 	for bb != 0 {
 		square := bb & -bb
 		bb &= bb - 1
 
-		squareNum := square.firstSquare()
+		squareNum := square.FirstSquare()
 
 		moveBb := knightAttacks[squareNum]
 		legalMovesBb := moveBb & (^friendly)
@@ -25,14 +25,14 @@ func (p Position) knightMoves() []Move {
 }
 
 func (p Position) knightAttacks(color int) Bitboard {
-	var bb Bitboard = p.pieceBitboards[Knight+color]
+	var bb Bitboard = p.PieceBitboards[Knight+color]
 	var attacks Bitboard = 0
 
 	for bb > 0 {
 		square := bb & -bb
 		bb &= bb - 1
 
-		squareNum := square.firstSquare()
+		squareNum := square.FirstSquare()
 
 		attacks |= knightAttacks[squareNum]
 	}

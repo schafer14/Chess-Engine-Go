@@ -5,7 +5,7 @@ func (p Position) pawnMoves() []Move {
 	moves := make([]Move, 0)
 	empty := p.empty()
 	var direction bool
-	var bb = p.pieceBitboards[Pawn+p.color]
+	var bb = p.PieceBitboards[Pawn+p.color]
 	var opponents = p.defenders() | (1 << p.enPassent)
 	var finalRank Bitboard
 	var startRank Bitboard
@@ -85,7 +85,7 @@ func (p Position) pawnMoves() []Move {
 
 func (p Position) pawnAttacks(color int) Bitboard {
 	var direction bool
-	var bb Bitboard = p.pieceBitboards[Pawn+color]
+	var bb Bitboard = p.PieceBitboards[Pawn+color]
 	var cantCapLeft Bitboard
 	var cantCapRight Bitboard
 

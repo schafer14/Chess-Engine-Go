@@ -2,14 +2,14 @@ package maurice
 
 func (p Position) kingMoves() []Move {
 	var friendly Bitboard = p.attackers()
-	var bb Bitboard = p.pieceBitboards[King+p.color]
+	var bb Bitboard = p.PieceBitboards[King+p.color]
 	var moves = make([]Move, 0)
 
 	for bb > 0 {
 		square := bb & -bb
 		bb &= bb - 1
 
-		squareNum := square.firstSquare()
+		squareNum := square.FirstSquare()
 
 		moveBb := kingAttacks[squareNum]
 		legalMovesBb := moveBb & (^friendly)
@@ -25,12 +25,12 @@ func (p Position) kingMoves() []Move {
 }
 
 func (p Position) kingAttacks(color int) Bitboard {
-	var bb Bitboard = p.pieceBitboards[King+color]
+	var bb Bitboard = p.PieceBitboards[King+color]
 	var attackBB Bitboard = 0
 
 	for bb > 0 {
 		square := bb & -bb
-		squareNum := square.firstSquare()
+		squareNum := square.FirstSquare()
 		bb &= bb - 1
 
 		attackBB |= kingAttacks[squareNum]
@@ -53,7 +53,7 @@ func (p Position) castle() []Move {
 		}
 
 		if possibleCastle {
-			moves = append(moves, NewMove(p, castlingFromSquare[schedule].firstSquare(), castlingToSquare[schedule].firstSquare()))
+			moves = append(moves, NewMove(p, castlingFromSquare[schedule].FirstSquare(), castlingToSquare[schedule].FirstSquare()))
 		}
 
 		return moves

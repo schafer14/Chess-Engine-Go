@@ -7,6 +7,7 @@ import (
 )
 
 type Move uint32
+type Moves []Move
 
 const (
 	isCapture   = 0x00F00000
@@ -23,7 +24,19 @@ const (
 // Bits 0F:00:00:00 => Promoted piece if any.
 // Bits F0:00:00:00 => Castle and en-passant flags.
 
-func (m Move) toString() string {
+func (s Moves) Len() int {
+	return len(s)
+}
+func (s Moves) Swap(i, j int) {
+	s[i], s[j] = s[j], s[i]
+}
+func (s Moves) Less(i, j int) bool {
+	_, _, _, c1 := s[i].split()
+	_, _, _, c2 := s[j].split()
+	return c1 < c2
+}
+
+func (m Move) ToString() string {
 	from, to, _, _ := m.split()
 	promo := ""
 
@@ -79,26 +92,26 @@ func (m Move) Promote(color int) []Move {
 	}
 }
 
-func (p Position) makeMove(move Move) Position {
+func (p Position) MakeMove(move Move) Position {
 	from, to, piece, capture := move.split()
 
 	if capture != 0 {
-		p.pieceBitboards[capture] &= ^(1 << to)
-		p.pieceBitboards[p.oppColor()] &= ^(1 << to)
+		p.PieceBitboards[capture] &= ^(1 << to)
+		p.PieceBitboards[p.oppColor()] &= ^(1 << to)
 		p.pieces[to] = 0
 	}
 
 	if move.isEnpassent() && p.enPassent > 0 {
 		enPassentSquare := p.enPassent - 8*uint8(1-2*p.color)
 		p.pieces[enPassentSquare] = 0
-		p.pieceBitboards[p.oppColor()] &= ^(1 << enPassentSquare)
-		p.pieceBitboards[Pawn+p.oppColor()] &= ^(1 << enPassentSquare)
+		p.PieceBitboards[p.oppColor()] &= ^(1 << enPassentSquare)
+		p.PieceBitboards[Pawn+p.oppColor()] &= ^(1 << enPassentSquare)
 	}
 
-	p.pieceBitboards[piece] &= ^(1 << from)
-	p.pieceBitboards[piece] |= 1 << to
-	p.pieceBitboards[p.color] &= ^(1 << from)
-	p.pieceBitboards[p.color] |= 1 << to
+	p.PieceBitboards[piece] &= ^(1 << from)
+	p.PieceBitboards[piece] |= 1 << to
+	p.PieceBitboards[p.color] &= ^(1 << from)
+	p.PieceBitboards[p.color] |= 1 << to
 
 	p.pieces[to] = p.pieces[from]
 	p.pieces[from] = 0
@@ -106,8 +119,8 @@ func (p Position) makeMove(move Move) Position {
 	if move.isPromotion() {
 		promoPiece := move.promotionPiece() + Piece(p.color)
 		p.pieces[to] = promoPiece
-		p.pieceBitboards[promoPiece] |= 1 << to
-		p.pieceBitboards[piece] &= ^(1 << to)
+		p.PieceBitboards[promoPiece] |= 1 << to
+		p.PieceBitboards[piece] &= ^(1 << to)
 	}
 
 	if move.isCastle() && p.color == White {
@@ -116,17 +129,17 @@ func (p Position) makeMove(move Move) Position {
 		if to == 6 {
 			p.pieces[7] = 0
 			p.pieces[5] = Rook
-			p.pieceBitboards[Rook] &= ^Bitboard(1 << 7)
-			p.pieceBitboards[Rook] |= 1 << 5
-			p.pieceBitboards[White] &= ^Bitboard(1 << 7)
-			p.pieceBitboards[White] |= 1 << 5
+			p.PieceBitboards[Rook] &= ^Bitboard(1 << 7)
+			p.PieceBitboards[Rook] |= 1 << 5
+			p.PieceBitboards[White] &= ^Bitboard(1 << 7)
+			p.PieceBitboards[White] |= 1 << 5
 		} else {
 			p.pieces[0] = 0
 			p.pieces[3] = Rook
-			p.pieceBitboards[Rook] &= ^Bitboard(1 << 0)
-			p.pieceBitboards[Rook] |= 1 << 3
-			p.pieceBitboards[White] &= ^Bitboard(1 << 0)
-			p.pieceBitboards[White] |= 1 << 3
+			p.PieceBitboards[Rook] &= ^Bitboard(1 << 0)
+			p.PieceBitboards[Rook] |= 1 << 3
+			p.PieceBitboards[White] &= ^Bitboard(1 << 0)
+			p.PieceBitboards[White] |= 1 << 3
 		}
 	}
 	if move.isCastle() && p.color == Black {
@@ -135,17 +148,17 @@ func (p Position) makeMove(move Move) Position {
 		if to == 62 {
 			p.pieces[63] = 0
 			p.pieces[61] = BlackRook
-			p.pieceBitboards[BlackRook] |= 1 << 61
-			p.pieceBitboards[BlackRook] &= ^Bitboard(1 << 63)
-			p.pieceBitboards[Black] |= 1 << 61
-			p.pieceBitboards[Black] &= ^Bitboard(1 << 63)
+			p.PieceBitboards[BlackRook] |= 1 << 61
+			p.PieceBitboards[BlackRook] &= ^Bitboard(1 << 63)
+			p.PieceBitboards[Black] |= 1 << 61
+			p.PieceBitboards[Black] &= ^Bitboard(1 << 63)
 		} else {
 			p.pieces[56] = 0
 			p.pieces[59] = BlackRook
-			p.pieceBitboards[BlackRook] |= 1 << 59
-			p.pieceBitboards[BlackRook] &= ^Bitboard(1 << 56)
-			p.pieceBitboards[Black] |= 1 << 59
-			p.pieceBitboards[Black] &= ^Bitboard(1 << 56)
+			p.PieceBitboards[BlackRook] |= 1 << 59
+			p.PieceBitboards[BlackRook] &= ^Bitboard(1 << 56)
+			p.PieceBitboards[Black] |= 1 << 59
+			p.PieceBitboards[Black] &= ^Bitboard(1 << 56)
 		}
 	}
 
@@ -210,7 +223,7 @@ func (m Move) promotionPiece() Piece {
 func (p Position) HumanFriendlyMove(move string) Position {
 	m := p.moveFromString(move)
 
-	return p.makeMove(m)
+	return p.MakeMove(m)
 }
 
 func (p Position) moveFromString(m string) Move {

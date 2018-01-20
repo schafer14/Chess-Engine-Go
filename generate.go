@@ -1,33 +1,28 @@
 package maurice
 
-import "fmt"
-
 func (p Position) HumanFriendlyMoves() []string {
-	allMoves := p.legalMoves()
+	allMoves := p.LegalMoves()
 
 	strMoves := make([]string, 0)
 
 	for _, m := range allMoves {
-		strMoves = append(strMoves, m.toString())
+		strMoves = append(strMoves, m.ToString())
 	}
 
 	return strMoves
 }
 
-func (p Position) legalMoves() []Move {
-	allMoves := p.pseudoMoves()
+func (p Position) LegalMoves() []Move {
+	allMoves := p.PseudoMoves()
 	var legalMoves []Move
 
 	for _, m := range allMoves {
 		isLegal := true
-		nb := p.makeMove(m)
-		kings := p.pieceBitboards[King+p.color]
+		nb := p.MakeMove(m)
+		kings := nb.PieceBitboards[King+p.color]
 
 		if nb.attacks(nb.color)&kings > 0 {
 			isLegal = false
-			nb.attacks(nb.color).Draw()
-			fmt.Println(m.toString())
-			fmt.Println("ILLEGAL")
 		}
 
 		if isLegal {
@@ -38,7 +33,7 @@ func (p Position) legalMoves() []Move {
 	return legalMoves
 }
 
-func (p Position) pseudoMoves() []Move {
+func (p Position) PseudoMoves() []Move {
 	allMoves := make([]Move, 0)
 
 	allMoves = append(allMoves, p.pawnMoves()...)
@@ -77,9 +72,9 @@ func (p Position) movesFromBitboard(bb Bitboard, fn func(Bitboard) Bitboard) []M
 	for bb > 0 {
 		square := bb & -bb
 		bb &= bb - 1
-		num := square.firstSquare()
+		num := square.FirstSquare()
 
-		moves = append(moves, NewMove(p, fn(square).firstSquare(), num))
+		moves = append(moves, NewMove(p, fn(square).FirstSquare(), num))
 	}
 
 	return moves

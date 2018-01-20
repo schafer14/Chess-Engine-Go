@@ -2,13 +2,14 @@ package maurice
 
 import (
 	"errors"
+	"fmt"
 	"strconv"
 )
 
 type Position struct {
 	positionHash   uint64       // Position Hash
 	pawnHash       uint64       // Pawn Hash
-	pieceBitboards [14]Bitboard // Bitboards for each pice
+	PieceBitboards [14]Bitboard // Bitboards for each pice
 	pieces         [64]Piece
 	positionScore  int
 	materialScore  int
@@ -20,27 +21,27 @@ type Position struct {
 }
 
 func (p Position) IsTerminal() bool {
-	return len(p.legalMoves()) == 0
+	return len(p.LegalMoves()) == 0
 }
 
-func (p Position) Result() (error, float64) {
+func (p Position) Result() (error, int) {
 	if !p.IsTerminal() {
 		return errors.New("Position is not terminal"), 0
 	}
 
 	if !p.isInCheck() {
-		return nil, 0.5
+		return nil, 0
 	}
 
 	if p.color == 0 {
 		return nil, 1
 	}
 
-	return nil, 0
+	return nil, -1
 }
 
-func (p Position) Move(move string) error {
-	p.HumanFriendlyMove(move)
+func (p *Position) Move(move string) error {
+	*p = p.HumanFriendlyMove(move)
 	return nil
 }
 
@@ -57,11 +58,11 @@ func (p Position) Turn() int {
 }
 
 func (p Position) attackers() Bitboard {
-	return p.pieceBitboards[p.color]
+	return p.PieceBitboards[p.color]
 }
 
 func (p Position) defenders() Bitboard {
-	return p.pieceBitboards[p.oppColor()]
+	return p.PieceBitboards[p.oppColor()]
 }
 
 func (p Position) oppColor() int {
@@ -69,7 +70,7 @@ func (p Position) oppColor() int {
 }
 
 func (p Position) occupied() Bitboard {
-	return p.pieceBitboards[White] | p.pieceBitboards[Black]
+	return p.PieceBitboards[White] | p.PieceBitboards[Black]
 }
 
 func (p Position) empty() Bitboard {
@@ -77,7 +78,7 @@ func (p Position) empty() Bitboard {
 }
 
 func (p Position) isInCheck() bool {
-	var king Bitboard = p.pieceBitboards[king(p.oppColor())]
+	var king Bitboard = p.PieceBitboards[king(p.oppColor())]
 
 	if p.attacks(p.color)&king > 0 {
 		return true

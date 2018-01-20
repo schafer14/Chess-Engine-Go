@@ -31,11 +31,11 @@ func PositionFromFEN(fen string) Position {
 				bitboardIndex := pieceMap[int(c)]
 				// Matches unicode characters for upper case characters
 				if c >= 0x41 && c <= 0x5A {
-					position.pieceBitboards[White].union(square)
+					position.PieceBitboards[White].union(square)
 				} else {
-					position.pieceBitboards[Black].union(square)
+					position.PieceBitboards[Black].union(square)
 				}
-				position.pieceBitboards[bitboardIndex].union(square)
+				position.PieceBitboards[bitboardIndex].union(square)
 				position.pieces[squareNum] = Piece(bitboardIndex)
 				square.shift(1)
 				squareNum += 1
@@ -72,7 +72,7 @@ func PositionFromFEN(fen string) Position {
 		position.enPassent = uint8(squareFromString(fields[3]))
 	}
 	//
-	//// Set Half makeMove Count
+	//// Set Half MakeMove Count
 	halfMoves, _ := strconv.ParseInt(fields[4], 10, 32)
 
 	position.count50 = uint8(halfMoves)
@@ -141,10 +141,10 @@ func (p Position) ToFen() string {
 		str += " " + numtoString(int(p.enPassent))
 	}
 
-	// Add half moves since pawn moved
+	// Add half moves since Pawn moved
 	str += " " + strconv.Itoa(int(p.count50))
 
-	// Add move count
+	// Add move Count
 	str += " 0"
 
 	return str

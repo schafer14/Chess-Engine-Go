@@ -2,13 +2,13 @@ package maurice
 
 func (p Position) queenMoves() []Move {
 	var friendly = p.attackers()
-	var bb = p.pieceBitboards[Queen+p.color]
+	var bb = p.PieceBitboards[Queen+p.color]
 	var occ = p.occupied()
 	var moves = make([]Move, 0)
 
 	for bb > 0 {
 		square := bb & -bb
-		squareNum := square.firstSquare()
+		squareNum := square.FirstSquare()
 		bb &= bb - 1
 
 		blockerB := occ & (bishopMagic[squareNum].mask)
@@ -32,13 +32,13 @@ func (p Position) queenMoves() []Move {
 }
 
 func (p Position) queenAttacks(color int) Bitboard {
-	bb := p.pieceBitboards[Queen+color]
+	bb := p.PieceBitboards[Queen+color]
 	occ := p.occupied()
 	attackBB := Bitboard(0)
 
 	for bb > 0 {
 		square := bb & -bb
-		squareNum := square.firstSquare()
+		squareNum := square.FirstSquare()
 		bb &= bb - 1
 
 		blockerB := occ & (bishopMagic[squareNum].mask)

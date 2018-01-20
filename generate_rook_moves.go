@@ -2,13 +2,13 @@ package maurice
 
 func (p Position) rookMoves() []Move {
 	var friendly = p.attackers()
-	var bb = p.pieceBitboards[Rook+p.color]
+	var bb = p.PieceBitboards[Rook+p.color]
 	var occ = p.occupied()
 	var moves = make([]Move, 0)
 
 	for bb > 0 {
 		square := bb & -bb
-		squareNum := square.firstSquare()
+		squareNum := square.FirstSquare()
 		bb &= bb - 1
 
 		blocker := occ & rookMagic[squareNum].mask
@@ -28,13 +28,13 @@ func (p Position) rookMoves() []Move {
 }
 
 func (p Position) rookAttacks(color int) Bitboard {
-	var bb Bitboard = p.pieceBitboards[Rook+color]
+	var bb Bitboard = p.PieceBitboards[Rook+color]
 	var occ Bitboard = p.occupied()
 	var attackBB Bitboard = 0
 
 	for bb > 0 {
 		square := bb & -bb
-		squareNum := square.firstSquare()
+		squareNum := square.FirstSquare()
 		bb &= bb - 1
 
 		blocker := occ & rookMagic[squareNum].mask

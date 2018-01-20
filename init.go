@@ -49,7 +49,7 @@ func buildBitBoardSquare(square int, piece string) {
 }
 
 func getPermutations(set Bitboard, mutable Bitboard) []Bitboard {
-	if mutable.count() == 0 {
+	if mutable.Count() == 0 {
 		return []Bitboard{set}
 	}
 

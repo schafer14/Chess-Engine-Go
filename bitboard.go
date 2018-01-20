@@ -45,7 +45,7 @@ func (b Bitboard) isOn(bit Bitboard) bool {
 	return b&bit > 0
 }
 
-func (b Bitboard) firstSquare() int {
+func (b Bitboard) FirstSquare() int {
 	return deBruijn[((b^(b-1))*0x03F79D71B4CB0A89)>>58]
 }
 
@@ -82,14 +82,14 @@ func (b *Bitboard) shift(n int) *Bitboard {
 }
 
 func (b Bitboard) toString() string {
-	squareNumber := b.firstSquare()
+	squareNumber := b.FirstSquare()
 	row := int(squareNumber / 8)
 	colNumber := int(squareNumber) % 8
 
 	return columnNames[colNumber] + strconv.Itoa(row+1)
 }
 
-func (b Bitboard) count() int {
+func (b Bitboard) Count() int {
 	b -= (b >> 1) & 0x5555555555555555
 	b = ((b >> 2) & 0x3333333333333333) + (b & 0x3333333333333333)
 	b = ((b >> 4) + b) & 0x0F0F0F0F0F0F0F0F

@@ -50,11 +50,11 @@ func perft() {
 
 func (p Position) Divide(d int) error {
 	sum := 0
-	for _, m := range p.legalMoves() {
-		nb := p.makeMove(m)
+	for _, m := range p.LegalMoves() {
+		nb := p.MakeMove(m)
 		num := nb.Perft(d - 1)
 		sum += num
-		fmt.Println(m.toString(), num)
+		fmt.Println(m.ToString(), num)
 	}
 	fmt.Println("Moves:", sum)
 
@@ -67,8 +67,8 @@ func (p Position) Perft(d int) int {
 	}
 	nodes := 0
 
-	for _, m := range p.pseudoMoves() {
-		nb := p.makeMove(m)
+	for _, m := range p.PseudoMoves() {
+		nb := p.MakeMove(m)
 		if !nb.isInCheck() {
 			nodes += nb.Perft(d - 1)
 		}
