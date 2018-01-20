@@ -19,11 +19,11 @@ type Position struct {
 	count50        uint8
 }
 
-func (p Position) IsTerminal() bool {
+func (p *Position) IsTerminal() bool {
 	return len(p.LegalMoves()) == 0
 }
 
-func (p Position) Result() (error, int) {
+func (p *Position) Result() (error, int) {
 	if !p.IsTerminal() {
 		return errors.New("Position is not terminal"), 0
 	}
@@ -44,15 +44,15 @@ func (p *Position) Move(move string) error {
 	return nil
 }
 
-func (p Position) PossibleMoves() []string {
+func (p *Position) PossibleMoves() []string {
 	return p.HumanFriendlyMoves()
 }
 
-func (p Position) State() string {
+func (p *Position) State() string {
 	return p.ToFen()
 }
 
-func (p Position) Turn() int {
+func (p *Position) Turn() int {
 	return p.color
 }
 
