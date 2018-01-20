@@ -2,7 +2,6 @@ package maurice
 
 import (
 	"errors"
-	"fmt"
 	"strconv"
 )
 
